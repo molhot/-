@@ -6,7 +6,7 @@
 /*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/29 16:28:10 by user              #+#    #+#             */
-/*   Updated: 2023/02/07 19:40:19 by user             ###   ########.fr       */
+/*   Updated: 2023/02/08 12:13:49 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,8 @@ typedef struct	s_redirect
 
 typedef struct s_command
 {
-	t_token		  *args;
-	t_redirect	*redirect;
+	t_token		 	*args;
+	t_redirect		**redirect;
 }	t_command;
 
 struct s_node {

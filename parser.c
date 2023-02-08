@@ -66,15 +66,13 @@ t_node	*parse(t_token *tok)
 {
 	t_node		*node;
 	t_redirect	*redirection_node;
+	bool		first_action;
 
 	node = new_node(ND_SIMPLE_CMD);
-	redirection_node = node->command->redirect;
-	printf("redirection pointer is > %p\n",redirection_node);
+	node->command->redirect = (t_redirect **)malloc(sizeof(t_redirect *) * 1);
+	first_action = true;
 	while (tok && !at_eof(tok))
 	{
-		printf("%s\n", tok->word);
-		if (tok->kind == TK_REDIRECT)
-			printf("this is redirect\n");
 		if (tok->kind == TK_WORD)
 		{
 			parse_word(&node->command->args, tokdup(tok));
@@ -82,19 +80,32 @@ t_node	*parse(t_token *tok)
 		}
 		else if (tok->kind == TK_REDIRECT)
 		{
-			parse_redirect(&redirection_node, &tok);
-			printf("redirection pointer is > %p\n",redirection_node);
-			printf("redirection content is > %s\n", redirection_node->file_path);
-			redirection_node->next = (t_redirect *)malloc(sizeof(t_redirect) * 1);
-			redirection_node = redirection_node->next;
+			if (first_action == true)
+			{
+				parse_redirect(&(*node->command->redirect), &tok);
+				first_action = false;
+				//printf("redirection address is > %p\n", *(node->command->redirect));
+				redirection_node = (*node->command->redirect);
+			}
+			else
+			{
+				parse_redirect(&redirection_node->next, &tok);
+				//printf("redirection address is > %p\n", redirection_node);
+				redirection_node = redirection_node->next;
+			}
 			tok = tok->next->next;
 		}
 		else
 			fatal_error("Implement parser");
 	}
+	if (first_action == true)
+		(*(node->command->redirect)) = NULL;
+	else
+	{
+		free(redirection_node);
+		redirection_node = NULL;
+	}
 	node->next = NULL;
-	redirection_node = NULL;
-	printf("redirection pointer is > %p\n",redirection_node);
 	return (node);
 }
 
@@ -112,6 +123,8 @@ bool	parse_redirect(t_redirect **redirect, t_token **tok)
 	// tok の next が word だったら redirect の filepathにそれを設定する
 	if ((*tok)->next->kind == TK_WORD)
 		(*redirect)->file_path = strdup((*tok)->next->word);
+	else
+		fatal_error("redirection end or not?\n");
 	return true;
 }
 

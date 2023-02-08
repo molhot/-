@@ -63,15 +63,21 @@ int interpret(t_command *command)
     {
         if (command->redirect != NULL)
         {
-            if (command->redirect->type == IN)
+            t_redirect *redirect;
+            redirect = *(command->redirect);
+            while (redirect != NULL)
             {
-                int fd = open(command->redirect->file_path, O_RDONLY);
-                dup2(fd, STDIN_FILENO);
-            }
-            if (command->redirect->type == OUT)
-            {
-                int fd = open(command->redirect->file_path, O_WRONLY | O_CREAT | O_TRUNC);
-                dup2(fd, STDOUT_FILENO);
+                if (redirect->type == IN)
+                {
+                    int fd = open((*(command->redirect))->file_path, O_RDONLY);
+                    dup2(fd, STDIN_FILENO);
+                }
+                if ((*(command->redirect))->type == OUT)
+                {
+                    int fd = open((*(command->redirect))->file_path, O_WRONLY | O_CREAT | O_TRUNC);
+                    dup2(fd, STDOUT_FILENO);
+                }
+                redirect = redirect->next;
             }
         }
         argv = args_to_argv(command->args); 

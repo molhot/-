@@ -31,19 +31,6 @@ int main()
 			node = parse(tok);
 			t_node *test;
 			test = node;
-			while (test != NULL)
-			{
-				printf("command is >%s\n", test->command->args->word);
-				t_redirect *redirect;
-				redirect = test->command->redirect;
-				while (redirect != NULL)
-				{
-					printf("redirection file is >%s\n", redirect->file_path);
-					redirect = redirect->next;
-				}
-				test = test->next;
-			}
-			break ;
 			//if (tok->kind == EOF)
 			//	;
 			// if (syntax_error)
