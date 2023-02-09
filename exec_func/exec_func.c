@@ -69,13 +69,17 @@ int interpret(t_command *command)
             {
                 if (redirect->type == IN)
                 {
-                    int fd = open((*(command->redirect))->file_path, O_RDONLY);
+                    close(command->now_in);
+                    int fd = open(redirect->file_path, O_RDONLY);
                     dup2(fd, STDIN_FILENO);
+                    command->now_in = fd;
                 }
-                if ((*(command->redirect))->type == OUT)
+                if (redirect->type == OUT && command->now_out == STDOUT_FILENO)
                 {
-                    int fd = open((*(command->redirect))->file_path, O_WRONLY | O_CREAT | O_TRUNC);
+                    close(command->now_out);
+                    int fd = open(redirect->file_path, O_WRONLY | O_CREAT | O_TRUNC);
                     dup2(fd, STDOUT_FILENO);
+                    command->now_out = fd;
                 }
                 redirect = redirect->next;
             }

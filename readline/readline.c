@@ -29,6 +29,8 @@ int main()
 			//tok には空白区切りで全てのものが格納されている
 			expand(tok);
 			node = parse(tok);
+			node->command->now_in = STDIN_FILENO;
+			node->command->now_out = STDOUT_FILENO;
 			t_node *test;
 			test = node;
 			//if (tok->kind == EOF)

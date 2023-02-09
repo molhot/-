@@ -6,7 +6,7 @@
 /*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/29 16:28:10 by user              #+#    #+#             */
-/*   Updated: 2023/02/08 12:13:49 by user             ###   ########.fr       */
+/*   Updated: 2023/02/09 14:14:11 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@
 #include <readline/history.h>
 
 /**** token *****/
+
+#define IN 0
+#define OUT 1
 
 typedef struct s_token t_token;
 
@@ -56,15 +59,15 @@ typedef struct s_redirect t_redirect;
 
 typedef struct s_node	t_node;
 
-typedef enum e_redirect_type
-{
-	IN,
-	OUT,
-} t_redirect_type;
+// typedef enum e_redirect_type
+// {
+// 	IN,
+// 	OUT,
+// } t_redirect_type;
 
 typedef struct	s_redirect
 {
-	t_redirect_type		type;
+	int					type;
 	char				*file_path;
 	t_redirect			*next;
 }				t_redirect;
@@ -73,6 +76,8 @@ typedef struct s_command
 {
 	t_token		 	*args;
 	t_redirect		**redirect;
+	int				now_in;
+	int				now_out;
 }	t_command;
 
 struct s_node {
