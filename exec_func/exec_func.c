@@ -55,6 +55,8 @@ int interpret(t_command *command)
     int wstatus;
     char **argv;
     char *command_name;
+    int fd;
+    t_redirect *redirect;
 
     pid = fork();
     if (pid < 0)
@@ -63,28 +65,30 @@ int interpret(t_command *command)
     {
         if (command->redirect != NULL)
         {
-            t_redirect *redirect;
             redirect = *(command->redirect);
             while (redirect != NULL)
             {
                 if (redirect->type == IN)
                 {
+                    redirect->stash_fd = command->now_in;
                     close(command->now_in);
-                    int fd = open(redirect->file_path, O_RDONLY);
+                    fd = open(redirect->file_path, O_RDONLY);
                     dup2(fd, command->now_in);
                     command->now_in = fd;
                 }
                 if (redirect->type == OUT)
                 {
+                    redirect->stash_fd = command->now_out;
                     close(command->now_out);
-                    int fd = open(redirect->file_path, O_WRONLY | O_CREAT | O_TRUNC);
+                    fd = open(redirect->file_path, O_WRONLY | O_CREAT | O_TRUNC);
                     dup2(fd, command->now_out);
                     command->now_out = fd;
                 }
                 if (redirect->type == APPEND)
                 {
-                    close(command->now_in);
-                    int fd = open(redirect->file_path, O_CREAT | O_WRONLY | O_APPEND);
+                    redirect->stash_fd = command->now_out;
+                    close(command->now_out);
+                    fd = open(redirect->file_path, O_CREAT | O_WRONLY | O_APPEND);
                     dup2(fd, command->now_out);
                     command->now_out = fd;
                 }

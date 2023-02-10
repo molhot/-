@@ -46,6 +46,26 @@ int main()
 			}
 			*/
 			exec(node->command);
+			t_redirect *redirect;
+			redirect = *(node->command->redirect);
+			// while (redirect->next != NULL)
+			// 	redirect = redirect->next;
+			//  while (redirect != NULL)
+			// {
+			// 	if (redirect->type == IN)
+			// 	{
+			// 		close(node->command->now_in);
+			// 		dup2(redirect->stash_fd, node->command->now_in);
+			// 	}
+			// 	else
+			// 	{
+			// 		close(node->command->now_out);
+			// 		dup2(redirect->stash_fd, node->command->now_out);
+			// 	}
+			// 	redirect = redirect->before;
+			// }
+			// printf("now 'now in' is >%d\n", node->command->now_in);
+			// printf("now 'now out' is >%d\n", node->command->now_out);
 			if (tok != NULL)
 				free_token(tok);
 		}
