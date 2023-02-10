@@ -84,14 +84,14 @@ t_node	*parse(t_token *tok)
 			{
 				parse_redirect(&(*node->command->redirect), &tok);
 				first_action = false;
-				//printf("redirection address is > %p and redirection file is %s,redirection type is %d\n", *(node->command->redirect), (*(node->command->redirect))->file_path, (*(node->command->redirect))->type);
 				redirection_node = (*node->command->redirect);
+				redirection_node->before = NULL;
 			}
 			else
 			{
 				parse_redirect(&redirection_node->next, &tok);
+				redirection_node->next->before = redirection_node;
 				redirection_node = redirection_node->next;
-				//printf("redirection address is > %p and redirection file is %s,redirection type is %d\n", redirection_node, redirection_node->file_path, redirection_node->type);
 			}
 			tok = tok->next->next;
 		}
@@ -112,7 +112,6 @@ bool	parse_redirect(t_redirect **redirect, t_token **tok)
 {
 	*redirect = malloc(sizeof(t_redirect));
 	// error
-	printf("word is %s\n", (*tok)->word);
 	if (strcmp((*tok)->word, "<") == 0)
 		(*redirect)->type = IN;
 	else if (strcmp((*tok)->word, ">") == 0 && strcmp((*tok)->next->word, ">") == 0)
