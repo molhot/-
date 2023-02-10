@@ -1,0 +1,9 @@
+command nowin is 0
+command now out is 1
+testing filecommand nowin is 0
+command now out is 0
+testing filecommand nowin is 0
+command now out is 0
+testing filecommand nowin is 0
+command now out is 0
+testing file

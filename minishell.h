@@ -6,7 +6,7 @@
 /*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/29 16:28:10 by user              #+#    #+#             */
-/*   Updated: 2023/02/09 14:14:11 by user             ###   ########.fr       */
+/*   Updated: 2023/02/09 16:41:57 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 
 #define IN 0
 #define OUT 1
+#define APPEND 2
 
 typedef struct s_token t_token;
 

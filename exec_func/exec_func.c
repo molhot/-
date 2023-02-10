@@ -67,20 +67,31 @@ int interpret(t_command *command)
             redirect = *(command->redirect);
             while (redirect != NULL)
             {
+                printf("redirect type is %d\n", redirect->type);
                 if (redirect->type == IN)
                 {
                     close(command->now_in);
                     int fd = open(redirect->file_path, O_RDONLY);
-                    dup2(fd, STDIN_FILENO);
+                    dup2(fd, command->now_in);
                     command->now_in = fd;
                 }
-                if (redirect->type == OUT && command->now_out == STDOUT_FILENO)
+                if (redirect->type == OUT)
                 {
                     close(command->now_out);
                     int fd = open(redirect->file_path, O_WRONLY | O_CREAT | O_TRUNC);
-                    dup2(fd, STDOUT_FILENO);
+                    dup2(fd, command->now_out);
                     command->now_out = fd;
                 }
+                if (redirect->type == APPEND)
+                {
+                    close(command->now_in);
+                    int fd = open(redirect->file_path, O_CREAT | O_WRONLY | O_APPEND);
+                    printf("redirect filepath is %s\n", redirect->file_path);
+                    dup2(fd, command->now_out);
+                    command->now_out = fd;
+                }
+                printf("command nowin is %d\n", command->now_in);
+                printf("command now out is %d\n", command->now_out);
                 redirect = redirect->next;
             }
         }

@@ -112,9 +112,14 @@ bool	parse_redirect(t_redirect **redirect, t_token **tok)
 {
 	*redirect = malloc(sizeof(t_redirect));
 	// error
-	//printf("word is %s\n", (*tok)->word);
+	printf("word is %s\n", (*tok)->word);
 	if (strcmp((*tok)->word, "<") == 0)
 		(*redirect)->type = IN;
+	else if (strcmp((*tok)->word, ">") == 0 && strcmp((*tok)->next->word, ">") == 0)
+	{
+		(*redirect)->type = APPEND;
+		*tok = (*tok)->next;
+	}
 	else
 		(*redirect)->type = OUT;
 
