@@ -119,6 +119,11 @@ bool	parse_redirect(t_redirect **redirect, t_token **tok)
 		(*redirect)->type = APPEND;
 		*tok = (*tok)->next;
 	}
+	else if (strcmp((*tok)->word, "<") == 0 && strcmp((*tok)->next->word, "<") == 0)
+	{
+		(*redirect)->type = HEREDOC;
+		*tok = (*tok)->next;
+	}
 	else
 		(*redirect)->type = OUT;
 

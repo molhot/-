@@ -6,7 +6,7 @@
 /*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/29 16:28:10 by user              #+#    #+#             */
-/*   Updated: 2023/02/10 14:33:12 by user             ###   ########.fr       */
+/*   Updated: 2023/02/10 18:53:08 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #define IN 0
 #define OUT 1
 #define APPEND 2
+#define HEREDOC 3
 
 typedef struct s_token t_token;
 

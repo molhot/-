@@ -76,6 +76,14 @@ int interpret(t_command *command)
                     dup2(fd, command->now_in);
                     command->now_in = fd;
                 }
+                if (redirect->type == HEREDOC)
+                {
+                    redirect->stash_fd = command->now_in;
+                    close(command->now_in);
+                    fd = open(redirect->file_path, O_CREAT | O_WRONLY | O_APPEND);
+                    dup2(fd, command->now_out);
+                    command->now_out = fd;
+                }
                 if (redirect->type == OUT)
                 {
                     redirect->stash_fd = command->now_out;
