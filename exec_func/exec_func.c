@@ -92,54 +92,52 @@ int interpret(t_command *command)
     int wstatus;
     char **argv;
     char *command_name;
-    int fd;
-    t_redirect *redirect;
 
     pid = fork();
     if (pid < 0)
         fatal_error("fork");
     else if (pid == 0)
     {
-        if (command->redirect != NULL)
-        {
-            redirect = *(command->redirect);
-            while (redirect != NULL)
-            {
-                if (redirect->type == IN)
-                {
-                    redirect->stash_fd = command->now_in;
-                    close(command->now_in);
-                    fd = open(redirect->file_path, O_RDONLY);
-                    dup2(fd, command->now_in);
-                    command->now_in = fd;
-                }
-                if (redirect->type == HEREDOC)
-                {
-                    redirect->stash_fd = command->now_in;
-                    close(command->now_in);
-                    fd = open(redirect->file_path, O_CREAT | O_WRONLY | O_APPEND);
-                    dup2(fd, command->now_out);
-                    command->now_out = fd;
-                }
-                if (redirect->type == OUT)
-                {
-                    redirect->stash_fd = command->now_out;
-                    close(command->now_out);
-                    fd = open(redirect->file_path, O_WRONLY | O_CREAT | O_TRUNC);
-                    dup2(fd, command->now_out);
-                    command->now_out = fd;
-                }
-                if (redirect->type == APPEND)
-                {
-                    redirect->stash_fd = command->now_out;
-                    close(command->now_out);
-                    fd = open(redirect->file_path, O_CREAT | O_WRONLY | O_APPEND);
-                    dup2(fd, command->now_out);
-                    command->now_out = fd;
-                }
-                redirect = redirect->next;
-            }
-        }
+        // if (command->redirect != NULL)
+        // {
+        //     redirect = *(command->redirect);
+        //     while (redirect != NULL)
+        //     {
+        //         if (redirect->type == IN)
+        //         {
+        //             redirect->stash_fd = command->now_in;
+        //             close(command->now_in);
+        //             fd = open(redirect->file_path, O_RDONLY);
+        //             dup2(fd, command->now_in);
+        //             command->now_in = fd;
+        //         }
+        //         if (redirect->type == HEREDOC)
+        //         {
+        //             redirect->stash_fd = command->now_in;
+        //             close(command->now_in);
+        //             fd = open(redirect->file_path, O_CREAT | O_WRONLY | O_APPEND);
+        //             dup2(fd, command->now_out);
+        //             command->now_out = fd;
+        //         }
+        //         if (redirect->type == OUT)
+        //         {
+        //             redirect->stash_fd = command->now_out;
+        //             close(command->now_out);
+        //             fd = open(redirect->file_path, O_WRONLY | O_CREAT | O_TRUNC);
+        //             dup2(fd, command->now_out);
+        //             command->now_out = fd;
+        //         }
+        //         if (redirect->type == APPEND)
+        //         {
+        //             redirect->stash_fd = command->now_out;
+        //             close(command->now_out);
+        //             fd = open(redirect->file_path, O_CREAT | O_WRONLY | O_APPEND);
+        //             dup2(fd, command->now_out);
+        //             command->now_out = fd;
+        //         }
+        //         redirect = redirect->next;
+        //     }
+        //}
         argv = args_to_argv(command->args); 
         command_name = argv[0];
         execve(searchpath(command_name), argv, environ);
@@ -203,14 +201,55 @@ int abusolute_path(char *line)
     }
 }
 
-// void do_redirectioncheck(t_command *command)
-// {
-
-// }
-
-void exec(t_command *command)
+void ready_redirectionfile(t_redirect *redirect)
 {
-    //do_redirectioncheck(command);
+    int fd;
+
+    while (redirect != NULL)
+    {
+        if (redirect->type == IN)
+            fd = open(redirect->file_path, O_RDONLY);
+        if (redirect->type == HEREDOC)
+            fd = heredoc(redirect->file_path);
+        if (redirect->type == OUT)
+            fd = open(redirect->file_path, O_WRONLY | O_CREAT | O_TRUNC);
+        if (redirect->type == APPEND)
+            fd = open(redirect->file_path, O_CREAT | O_WRONLY | O_APPEND);
+        redirect->redirectfile = fd;
+        redirect->redirectfile = stashfd(fd);
+        redirect = redirect->next;
+    }
+}
+
+void    redirect_reconect(t_command *command)
+{
+    t_redirect  *redirect;
+
+    redirect = *(command->redirect);
+    while (redirect != NULL)
+    {
+        if (redirect->type == IN || redirect->type == HEREDOC)
+        {
+            close(command->now_in);
+            dup2(redirect->redirectfile, command->now_in);
+        }
+        if (redirect->type == OUT || redirect->type == APPEND)
+        {
+            close(command->now_out);
+            dup2(redirect->redirectfile, command->now_out);
+        }
+        redirect = redirect->next;
+    }
+}
+
+void    exec(t_command *command)
+{
+    t_redirect *f_redirect;
+
+    f_redirect = *(command->redirect);
+    ready_redirectionfile(*(command->redirect));
+    *(command->redirect) = f_redirect;
+    redirect_reconect(command);
 	interpret(command);
 }
 

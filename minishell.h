@@ -6,7 +6,7 @@
 /*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/29 16:28:10 by user              #+#    #+#             */
-/*   Updated: 2023/02/10 18:53:08 by user             ###   ########.fr       */
+/*   Updated: 2023/02/12 17:33:21 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,8 @@ typedef struct	s_redirect
 {
 	int					type;
 	char				*file_path;
-	int					stash_fd;
+	int					stashed_fd;
+	int					redirectfile;
 	t_redirect			*next;
 	t_redirect			*before;
 }				t_redirect;
