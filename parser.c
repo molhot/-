@@ -112,9 +112,7 @@ bool	parse_redirect(t_redirect **redirect, t_token **tok)
 {
 	*redirect = malloc(sizeof(t_redirect));
 	// error
-	if (strcmp((*tok)->word, "<") == 0)
-		(*redirect)->type = IN;
-	else if (strcmp((*tok)->word, ">") == 0 && strcmp((*tok)->next->word, ">") == 0)
+	if (strcmp((*tok)->word, ">") == 0 && strcmp((*tok)->next->word, ">") == 0)
 	{
 		(*redirect)->type = APPEND;
 		*tok = (*tok)->next;
@@ -124,6 +122,8 @@ bool	parse_redirect(t_redirect **redirect, t_token **tok)
 		(*redirect)->type = HEREDOC;
 		*tok = (*tok)->next;
 	}
+	else if (strcmp((*tok)->word, "<") == 0)
+		(*redirect)->type = IN;
 	else
 		(*redirect)->type = OUT;
 

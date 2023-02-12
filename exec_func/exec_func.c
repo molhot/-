@@ -48,6 +48,43 @@ char    **line_to_argv(char *line);
 char    **args_to_argv(t_token *args);
 
 #include <fcntl.h>
+
+int    stashfd(int fd)
+{
+    int    stashfd;
+
+    stashfd = fcntl(fd, F_DUPFD, 10);
+    if (stashfd < 0)
+        fatal_error("fcntl");
+    if (close(fd) < 0)
+        fatal_error("close");
+    return (stashfd);
+}
+
+int heredoc(const char *deli)
+{
+    char *line;
+    int pfd[2];
+
+    if (pipe(pfd) < 0)
+        return (25555);
+    while (1)
+    {
+        line = readline("input > ");
+        if (line == NULL)
+            break;
+        else if (strcmp(line, deli) == 0)
+        {
+            free(line);
+            break;
+        }
+        dprintf(pfd[1], "%s\n", line);
+        free(line);
+    }
+    close (pfd[1]);
+    return (pfd[0]);
+}
+
 int interpret(t_command *command)
 {
     extern char **environ;
@@ -116,6 +153,7 @@ int interpret(t_command *command)
     }
 }
 
+
 /**
  *  line が スペースを含む時は，splitする。
  *  そうではない時は，lineとNULLからなるchar **型のデータを返す
@@ -165,8 +203,14 @@ int abusolute_path(char *line)
     }
 }
 
+// void do_redirectioncheck(t_command *command)
+// {
+
+// }
+
 void exec(t_command *command)
 {
+    //do_redirectioncheck(command);
 	interpret(command);
 }
 
